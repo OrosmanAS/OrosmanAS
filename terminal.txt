@@ -11,23 +11,30 @@
 # and, for drawings, violet from light to deep: <1>..</1> <2>..</2> <3>..</3> <4>..</4>
 # Block characters (█ ▀ ▄ ▌ ▐ ░ ▒ ▓) and the lines ─ │ are drawn as solid shapes.
 # Live numbers, refreshed every Monday: {{uptime}} {{repos}} {{stars}} {{followers}}
-# The terminal is 88 characters wide after the indent; longer lines end in "…".
+# A line can be 88 characters long, indent included; longer ones end in "…".
 
 $ neofetch
            <g>▄▄▄▄▄▄▄▄</g>               <v><b>oros</b></v>@<v><b>bigbrain</b></v>
             <g>██▌▐██</g>                <d>─────────────</d>
         <1>▄▄▄▄██████▄▄▄▄</1>            <v>uptime</v>   {{uptime}} on github
         <1>██████████████</1>            <v>repos</v>    {{repos}} public · {{stars}} stars
-    <2>▄▄▄▄██████████████▄▄▄▄</2>        <v>langs</v>    kotlin · typescript · python · gdscript
-    <2>██████████████████████</2>        <v>focus</v>    on-device llms · legal tech
-<3>▄▄▄▄██████████████████████▄▄▄▄</3>    <v>pair</v>     claude code
-<3>██████████████████████████████</3>    <v>phone</v>    galaxy s22+, running an llm on its npu
+    <2>▄▄▄▄██████████████▄▄▄▄</2>        <v>langs</v>    typescript · javascript · python · kotlin
+    <2>██████████████████████</2>        <v>stack</v>    react · node · postgres · office.js · nginx
+<3>▄▄▄▄██████████████████████▄▄▄▄</3>    <v>focus</v>    legal ai · on-device llms · speech-to-text
+<3>██████████████████████████████</3>    <v>pair</v>     claude code
+                                  <v>phone</v>    galaxy s22+, running an llm on its npu
 
 $ cat ~/now
-  <v>building</v>   an AI legal assistant, in private beta
+  <v>shipping</v>   LawAngel: an AI legal assistant inside Microsoft Word (in beta)
+  <v>building</v>   LawHero: a CRM for law firms, from AI intake to invoices
+  <v>planning</v>   LawGuru: one portal that ties them together
   <v>hacking</v>    LLMs on a phone NPU that the official tools gave up on
 
 $ ls ~/projects
+  <v><b>lawangel/</b></v>          AI for lawyers inside Microsoft Word: contract and court-paper
+                     reviews, tracked-change edits, case folders, law search
+  <v><b>lawhero/</b></v>           a CRM for law firms: AI intake in English and Afrikaans,
+                     conflict checks, client portal, quotes, billing, trust accounts
   <v><b>s22-npu-chat/</b></v>      a local LLM on the Snapdragon 8 Gen 1 NPU of a Galaxy S22+:
                      no server, and no internet once the model is on the phone
   <v><b>9AnimeToSimkl/</b></v>     a Chrome extension: watch an episode on 9animetv.to and it
@@ -35,10 +42,16 @@ $ ls ~/projects
   <v><b>tritium-archive/</b></v>   legacy Tritium motor controller, BMS and CAN tools, kept
                      for solar car teams
 
-$ git log --oneline -6
+$ cat ~/lab/notes
+  <d>-</d> whisper on a GTX 1650: 55 min of audio in <g>4.2 min</g>, speakers labelled from
+    3 s voice prints (fp16 gives garbage on 16-series cards; int8_float32 works)
+  <d>-</d> follow-up questions rewritten before the law search: nDCG@10 <g>0.27 → 0.82</g>
+  <d>-</d> LawHero's production review: <g>77</g> AI agents, <g>49</g> findings, every one fixed
+  <d>-</d> Kimi-Linear 48B on an 8 GB phone: about <g>one token a second</g>
+
+$ git log --oneline -5
   <g>b2181fe</g>  Prepare for a public repo: disclaimer, Apache-2.0, no Qualcomm outputs
   <g>504bfb1</g>  Catalog: Kimi-Linear 48B-A3B Q3_K_M (21 GB), already on the test phone
   <g>1ee6855</g>  Add CPU models via a bundled llama.cpp server (LFM2.5 8B-A1B, Kimi-Linear 48B-A3B)
   <g>ed799d1</g>  CI: build llama.cpp (llama-server, llama-cli) for arm64 Android
-  <g>6db6f68</g>  Fix thinking loops and stuck chats, add model catalog and live stats
   <g>37f4198</g>  Add NPU chat app and GitHub Actions build
