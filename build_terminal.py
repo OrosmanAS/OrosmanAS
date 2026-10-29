@@ -379,7 +379,8 @@ def embedded_fonts(rows, warnings):
     for weight, chars in used.items():
         if not chars:
             continue
-        font = TTFont(os.path.join(HERE, FONTS[weight]))
+        # recalcTimestamp=False keeps the output identical from one build to the next
+        font = TTFont(os.path.join(HERE, FONTS[weight]), recalcTimestamp=False)
         missing = sorted(ch for ch in chars if ord(ch) not in font.getBestCmap())
         if missing:
             warnings.append(f"Not in the font, so shown in a fallback font: {' '.join(missing)}")
