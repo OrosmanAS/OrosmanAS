@@ -68,7 +68,10 @@ ENTER = 0.3   # after the last key, before the output
 LINE = 0.03   # between output lines
 NEXT = 0.6    # after the output, before the next prompt
 BLINK = 1.1   # cursor blink at the last prompt
-FLIP = .01    # each "appear" animation lasts this long, so it starts this much early
+
+# How the reveal works: everything is visible by default, and an animation that
+# starts at 0 s keeps each piece hidden until its moment. Chrome stops animating
+# an SVG picture once nothing in it is running, so nothing may wait on a delay.
 
 FONTS = {400: "fonts/JetBrainsMono-Regular.woff2", 700: "fonts/JetBrainsMono-Bold.woff2"}
 
@@ -269,7 +272,7 @@ def row_group(cells, col0, top, at):
         parts.append(f'<text y="{num(top + BASE)}">{spans}</text>')
     if not parts:
         return ""
-    return f'<g class="a" style="animation-delay:{at - FLIP:.3f}s">{"".join(parts)}</g>'
+    return f'<g class="a" style="animation-duration:{at:.3f}s">{"".join(parts)}</g>'
 
 
 def timeline(rows):
@@ -309,22 +312,18 @@ def build(rows, theme, fonts_css):
         x0 = PAD_X + len(prompt) * CW
         geo = f'x="{num(x0)}" y="{num(top + CUR_TOP)}" width="{num(CW)}" height="{num(CUR_H)}"'
         p = when.get(r, last)
-        on = f"on {FLIP}s step-end {p - FLIP:.3f}s both"
         if typed is None:                           # the last prompt: blink for ever
-            anim = f"{on},blink {BLINK}s linear {p:.3f}s infinite"
+            anim = f"h {p:.3f}s linear,blink {BLINK}s linear {p:.3f}s infinite"
             return f'<rect class="k last" {geo} style="animation:{anim}"/>'
+        # One animation from 0 s until Enter: hidden, shown with the prompt,
+        # one step right per key; when it ends the cursor is hidden again.
         off = (typed[-1] if typed else p + THINK) + ENTER
-        anim = on
-        if typed:
-            span = typed[-1] - p + .001
-            stops = [f"0%{{transform:translateX(0)}}"]
-            stops += [f"{(t - p) / span * 100:.4f}%{{transform:translateX({num((i + 1) * CW)}px)}}"
-                      for i, t in enumerate(typed)]
-            stops.append(f"100%{{transform:translateX({num(len(typed) * CW)}px)}}")
-            frames.append(f"@keyframes m{r}{{{''.join(stops)}}}")
-            anim += f",m{r} {span:.3f}s step-end {p:.3f}s both"
-        anim += f",off {FLIP}s step-end {off:.3f}s forwards"
-        return f'<rect class="k" {geo} style="animation:{anim}"/>'
+        stops = ["0%{visibility:hidden;transform:translateX(0)}", f"{p / off * 100:.4f}%{{visibility:visible}}"]
+        stops += [f"{t / off * 100:.4f}%{{transform:translateX({num((i + 1) * CW)}px)}}"
+                  for i, t in enumerate(typed)]
+        stops.append(f"100%{{visibility:visible;transform:translateX({num(len(typed) * CW)}px)}}")
+        frames.append(f"@keyframes m{r}{{{''.join(stops)}}}")
+        return f'<rect class="k" {geo} style="animation:m{r} {off:.3f}s step-end"/>'
 
     for r, (kind, cells) in enumerate(rows):
         top = BAR_H + PAD_TOP + r * LINE_H
@@ -337,7 +336,7 @@ def build(rows, theme, fonts_css):
                 continue
             x = PAD_X + (len(prompt) + i) * CW
             body.append(f'<text class="a {colour}{" b" if bold else ""}" x="{num(x)}" '
-                        f'y="{num(top + BASE)}" style="animation-delay:{keys[r][i] - FLIP:.3f}s">{esc(ch)}</text>')
+                        f'y="{num(top + BASE)}" style="animation-duration:{keys[r][i]:.3f}s">{esc(ch)}</text>')
         body.append(cursor(r, top, keys[r]))
 
     top = BAR_H + PAD_TOP + (total_rows - 1) * LINE_H
@@ -351,14 +350,13 @@ def build(rows, theme, fonts_css):
            + f"font-size:{FONT_SIZE}px;font-variant-ligatures:none;fill:{c['o']}}}"
            + "".join(f".{k}{{fill:{c[k]}}}" for k in COLOURS)
            + "g rect{shape-rendering:crispEdges}"
-           + f".b{{font-weight:700}}.k{{fill:{c['cursor']};visibility:hidden}}"
+           + f".b{{font-weight:700}}.k{{fill:{c['cursor']};visibility:hidden}}.k.last{{visibility:visible}}"
            + f".t{{font-size:12px;fill:{c['d']}}}"
-           + f".a{{animation:on {FLIP}s step-end both}}"
-           + "@keyframes on{from{visibility:hidden}to{visibility:visible}}"
-           + "@keyframes off{from,to{visibility:hidden}}"
+           + ".a{animation:h 1s linear}"             # each piece sets its own duration
+           + "@keyframes h{from,to{visibility:hidden}}"
            + "@keyframes blink{0%,50%{opacity:1}50.01%,100%{opacity:0}}"
            + "".join(frames)
-           + "@media (prefers-reduced-motion:reduce){.a,.k{animation:none!important}.k.last{visibility:visible}}")
+           + "@media (prefers-reduced-motion:reduce){.a,.k{animation:none!important}}")
     w, h, rad = WIDTH, height, RADIUS
     bar = (f"M.5 {BAR_H}V{rad + .5}A{rad} {rad} 0 0 1 {rad + .5} .5H{w - rad - .5}"
            f"A{rad} {rad} 0 0 1 {w - .5} {rad + .5}V{BAR_H}Z")
