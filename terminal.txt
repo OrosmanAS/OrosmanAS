@@ -1,0 +1,44 @@
+# What the terminal on your GitHub profile types out.
+#
+# Change this file on github.com (or push a change) and a GitHub Action redraws
+# the picture in a minute or two.
+#
+#   $ text           a command, typed out after the prompt
+#   any other line   printed as output, exactly as written (blank lines too)
+#   # text           a note like this one, never shown
+#
+# Colours in output lines: <v>violet</v> <g>gold</g> <w>white</w> <d>dim</d> <b>bold</b>
+# and, for drawings, violet from light to deep: <1>..</1> <2>..</2> <3>..</3> <4>..</4>
+# Block characters (█ ▀ ▄ ▌ ▐ ░ ▒ ▓) and the lines ─ │ are drawn as solid shapes.
+# Live numbers, refreshed every Monday: {{uptime}} {{repos}} {{stars}} {{followers}}
+# The terminal is 88 characters wide after the indent; longer lines end in "…".
+
+$ neofetch
+           <g>▄▄▄▄▄▄▄▄</g>               <v><b>oros</b></v>@<v><b>bigbrain</b></v>
+            <g>██▌▐██</g>                <d>─────────────</d>
+        <1>▄▄▄▄██████▄▄▄▄</1>            <v>uptime</v>   {{uptime}} on github
+        <1>██████████████</1>            <v>repos</v>    {{repos}} public · {{stars}} stars
+    <2>▄▄▄▄██████████████▄▄▄▄</2>        <v>langs</v>    kotlin · typescript · python · gdscript
+    <2>██████████████████████</2>        <v>focus</v>    on-device llms · legal tech
+<3>▄▄▄▄██████████████████████▄▄▄▄</3>    <v>pair</v>     claude code
+<3>██████████████████████████████</3>    <v>phone</v>    galaxy s22+, running an llm on its npu
+
+$ cat ~/now
+  <v>building</v>   an AI legal assistant, in private beta
+  <v>hacking</v>    LLMs on a phone NPU that the official tools gave up on
+
+$ ls ~/projects
+  <v><b>s22-npu-chat/</b></v>      a local LLM on the Snapdragon 8 Gen 1 NPU of a Galaxy S22+:
+                     no server, and no internet once the model is on the phone
+  <v><b>9AnimeToSimkl/</b></v>     a Chrome extension: watch an episode on 9animetv.to and it
+                     gets marked as watched on Simkl
+  <v><b>tritium-archive/</b></v>   legacy Tritium motor controller, BMS and CAN tools, kept
+                     for solar car teams
+
+$ git log --oneline -6
+  <g>b2181fe</g>  Prepare for a public repo: disclaimer, Apache-2.0, no Qualcomm outputs
+  <g>504bfb1</g>  Catalog: Kimi-Linear 48B-A3B Q3_K_M (21 GB), already on the test phone
+  <g>1ee6855</g>  Add CPU models via a bundled llama.cpp server (LFM2.5 8B-A1B, Kimi-Linear 48B-A3B)
+  <g>ed799d1</g>  CI: build llama.cpp (llama-server, llama-cli) for arm64 Android
+  <g>6db6f68</g>  Fix thinking loops and stuck chats, add model catalog and live stats
+  <g>37f4198</g>  Add NPU chat app and GitHub Actions build

@@ -1,0 +1,63 @@
+# Redraws the terminal pictures from terminal.txt and puts them on the
+# `output` branch, which the README shows.
+name: Terminal
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - terminal.txt
+      - build_terminal.py
+      - fonts/**
+      - .github/workflows/terminal.yml
+  schedule:
+    - cron: "23 4 * * 1"   # Mondays, to refresh the live numbers
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: terminal
+  cancel-in-progress: true
+
+jobs:
+  draw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - run: pip install fonttools brotli
+
+      - name: Draw the terminal
+        run: python build_terminal.py --out "$RUNNER_TEMP/svg"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Publish to the output branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/svg"
+          if git fetch -q --depth=1 origin output 2>/dev/null; then
+            changed=0
+            for f in "$out"/*; do
+              git show "FETCH_HEAD:$(basename "$f")" 2>/dev/null | cmp -s - "$f" || changed=1
+            done
+            if [ "$changed" = 0 ]; then
+              echo "The pictures haven't changed."
+              exit 0
+            fi
+          fi
+          cd "$out"
+          git init -q -b output
+          git add -A
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "Terminal pictures for ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" output
