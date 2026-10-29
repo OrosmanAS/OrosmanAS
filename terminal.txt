@@ -9,19 +9,22 @@
 #
 # Colours in output lines: <v>violet</v> <g>gold</g> <w>white</w> <d>dim</d> <b>bold</b>
 # and, for drawings, violet from light to deep: <1>..</1> <2>..</2> <3>..</3> <4>..</4>
-# Block characters (█ ▀ ▄ ▌ ▐ ░ ▒ ▓) and the lines ─ │ are drawn as solid shapes.
+# Block characters (█ ▀ ▄ ▌ ▐ ░ ▒ ▓) and box lines (─ │ ├ └ ┌ ┐ ┘ ┤ ┬ ┴ ┼) are
+# drawn as solid shapes, so drawings and trees join up without gaps.
 # Live numbers, refreshed every Monday: {{uptime}} {{repos}} {{stars}} {{followers}}
 # A line can be 88 characters long, indent included; longer ones end in "…".
+# In the project tree, gold names are public repos and violet ones are private.
 
 $ neofetch
            <g>▄▄▄▄▄▄▄▄</g>               <v><b>oros</b></v>@<v><b>bigbrain</b></v>
             <g>██▌▐██</g>                <d>─────────────</d>
         <1>▄▄▄▄██████▄▄▄▄</1>            <v>uptime</v>   {{uptime}} on github
         <1>██████████████</1>            <v>repos</v>    {{repos}} public · {{stars}} stars
-    <2>▄▄▄▄██████████████▄▄▄▄</2>        <v>langs</v>    typescript · javascript · python · kotlin
-    <2>██████████████████████</2>        <v>stack</v>    react · node · postgres · office.js · nginx
-<3>▄▄▄▄██████████████████████▄▄▄▄</3>    <v>focus</v>    legal ai · on-device llms · speech-to-text
-<3>██████████████████████████████</3>    <v>pair</v>     claude code
+    <2>▄▄▄▄██████████████▄▄▄▄</2>        <v>langs</v>    ts · js · python · kotlin · c++ · gdscript
+    <2>██████████████████████</2>        <v>stack</v>    react · node · postgres · fastapi · office.js
+<3>▄▄▄▄██████████████████████▄▄▄▄</3>    <v>tools</v>    blender · godot · yolov8 · whisper · ollama
+<3>██████████████████████████████</3>    <v>focus</v>    legal ai · local llms · speech · vision
+                                  <v>pair</v>     claude code
                                   <v>phone</v>    galaxy s22+, running an llm on its npu
 
 $ cat ~/now
@@ -30,17 +33,49 @@ $ cat ~/now
   <v>planning</v>   LawGuru: one portal that ties them together
   <v>hacking</v>    LLMs on a phone NPU that the official tools gave up on
 
-$ ls ~/projects
-  <v><b>lawangel/</b></v>          AI for lawyers inside Microsoft Word: contract and court-paper
-                     reviews, tracked-change edits, case folders, law search
-  <v><b>lawhero/</b></v>           a CRM for law firms: AI intake in English and Afrikaans,
-                     conflict checks, client portal, quotes, billing, trust accounts
-  <v><b>s22-npu-chat/</b></v>      a local LLM on the Snapdragon 8 Gen 1 NPU of a Galaxy S22+:
-                     no server, and no internet once the model is on the phone
-  <v><b>9AnimeToSimkl/</b></v>     a Chrome extension: watch an episode on 9animetv.to and it
-                     gets marked as watched on Simkl
-  <v><b>tritium-archive/</b></v>   legacy Tritium motor controller, BMS and CAN tools, kept
-                     for solar car teams
+$ tree ~/projects
+  <w>~/projects</w>
+  <d>├──</d> <w><b>legal-tech</b></w>
+  <d>│   ├──</d> <v><b>lawangel/</b></v>          AI for lawyers inside Microsoft Word (in beta)
+  <d>│   ├──</d> <v><b>lawhero/</b></v>           CRM for law firms: AI intake, client portal, billing
+  <d>│   ├──</d> <v><b>lawguru/</b></v>           the portal that will tie them together
+  <d>│   ├──</d> <v><b>etemenanki-word/</b></v>   the first Word add-in: AI contract review, no server needed
+  <d>│   ├──</d> <v><b>ophanim/</b></v>           legal document management (Next.js, Express, Prisma)
+  <d>│   ├──</d> <v><b>ophanim-pipeline/</b></v>  legal PDFs into AI training data, 14 workers + review app
+  <d>│   ├──</d> <v><b>taggingpro/</b></v>        tags legal PDFs with self-hosted LLMs on rented GPUs
+  <d>│   ├──</d> <v><b>atlas/</b></v>             plain-language search over case law (Qdrant, voyage-law-2)
+  <d>│   ├──</d> <v><b>atlas-meeting/</b></v>     live meeting transcripts with an AI case summary
+  <d>│   ├──</d> <v><b>navi/</b></v>              legal-document search: word index and tag filters
+  <d>│   ├──</d> <v><b>court-tools/</b></v>       read-only API tools for two court case-file systems
+  <d>│   ├──</d> <v><b>scrapers/</b></v>          case law, acts and regulations, scraped into one database
+  <d>│   ├──</d> <v><b>detectors/</b></v>         YOLOv8: missing signatures and court stamps in PDFs
+  <d>│   ├──</d> <v><b>claude-ocr/</b></v>        scans, stamps and handwriting to text with vision models
+  <d>│   └──</d> <v><b>geneva-api/</b></v>        one FastAPI for law search, court files and meetings
+  <d>├──</d> <w><b>ai</b></w>
+  <d>│   ├──</d> <g><b>s22-npu-chat/</b></g>      an LLM on the Galaxy S22+'s NPU, no internet needed
+  <d>│   ├──</d> <v><b>flychat/</b></v>           a VRChat avatar steered by a simulated fruit-fly brain
+  <d>│   ├──</d> <v><b>qwen-legal-lora/</b></v>   Qwen2.5 14B fine-tuned with LoRA on legal documents
+  <d>│   ├──</d> <v><b>whisper-tools/</b></v>     transcripts with speaker labels, on a GTX 1650
+  <d>│   ├──</d> <v><b>voice-assistant/</b></v>   a local voice assistant on Ollama
+  <d>│   └──</d> <v><b>legalrag/</b></v>          local RAG with sentence-transformers and Chroma
+  <d>├──</d> <w><b>solar-car</b></w>
+  <d>│   ├──</d> <g><b>tritium-archive/</b></g>   legacy Tritium motor controller, BMS and CAN tools
+  <d>│   ├──</d> <v><b>race-tracker/</b></v>      every team's live position and speed, per race day
+  <d>│   ├──</d> <v><b>energy-optimiser/</b></v>  race energy strategy from the route (an IEEE method)
+  <d>│   └──</d> <v><b>pack-predictor/</b></v>    battery voltage from telemetry, BMS logs and elevation
+  <d>├──</d> <w><b>web-and-tools</b></w>
+  <d>│   ├──</d> <g><b>9AnimeToSimkl/</b></g>     marks what you watch on 9animetv.to as watched on Simkl
+  <d>│   ├──</d> <v><b>k53-smart-test/</b></v>    learner's-licence mock test that drills your weak spots
+  <d>│   ├──</d> <v><b>shelter-records/</b></v>   an animal shelter's old Delphi app, rebuilt for the web
+  <d>│   └──</d> <v><b>pdf2indesign-gui/</b></v>  GUI and one-file .exe for a PDF-to-InDesign converter
+  <d>└──</d> <w><b>3d-and-games</b></w>
+  <d>    ├──</d> <v><b>jacaranda/</b></v>         an indie game in Godot
+  <d>    ├──</d> <v><b>lucy/</b></v>              a VRChat companion avatar, sculpted and painted in Blender
+  <d>    ├──</d> <v><b>slimevr-trackers/</b></v>  DIY full-body VR trackers: ESP boards and IMUs
+  <d>    ├──</d> <v><b>mineoros/</b></v>          Minecraft seed finder in C++, built on cubiomes
+  <d>    └──</d> <v><b>lawguru-brand/</b></v>     logo animations for the LawGuru family
+
+  <d>5 groups, 34 projects · gold ones are public on github</d>
 
 $ cat ~/lab/notes
   <d>-</d> whisper on a GTX 1650: 55 min of audio in <g>4.2 min</g>, speakers labelled from
@@ -48,10 +83,5 @@ $ cat ~/lab/notes
   <d>-</d> follow-up questions rewritten before the law search: nDCG@10 <g>0.27 → 0.82</g>
   <d>-</d> LawHero's production review: <g>77</g> AI agents, <g>49</g> findings, every one fixed
   <d>-</d> Kimi-Linear 48B on an 8 GB phone: about <g>one token a second</g>
-
-$ git log --oneline -5
-  <g>b2181fe</g>  Prepare for a public repo: disclaimer, Apache-2.0, no Qualcomm outputs
-  <g>504bfb1</g>  Catalog: Kimi-Linear 48B-A3B Q3_K_M (21 GB), already on the test phone
-  <g>1ee6855</g>  Add CPU models via a bundled llama.cpp server (LFM2.5 8B-A1B, Kimi-Linear 48B-A3B)
-  <g>ed799d1</g>  CI: build llama.cpp (llama-server, llama-cli) for arm64 Android
-  <g>37f4198</g>  Add NPU chat app and GitHub Actions build
+  <d>-</d> fly-brain kernel: <g>748 → 100 ms</g> a frame on a 4-core PC, with VRChat running
+  <d>-</d> the fly avatar learned fear: it avoids a scary scene <g>40%</g> of the time, others 0%

@@ -79,7 +79,11 @@ BLOCKS = {
     "▌": (0, 0, .5, 1, 1), "▐": (.5, 0, .5, 1, 1),
     "░": (0, 0, 1, 1, .25), "▒": (0, 0, 1, 1, .5), "▓": (0, 0, 1, 1, .75),
 }
-LINES = "─│"
+# Box-drawing characters are drawn as 1px lines from the middle of the cell
+# to the edges named here (up, down, left, right), so trees join up too.
+BOX = {"─": "lr", "│": "ud", "┌": "dr", "┐": "dl", "└": "ur", "┘": "ul",
+       "├": "udr", "┤": "udl", "┬": "dlr", "┴": "ulr", "┼": "udlr"}
+DRAWN = set(BLOCKS) | set(BOX)
 TAG = re.compile(r"</?([vgdwb1-4])>")
 LIVE = re.compile(r"\{\{(\w+)\}\}")
 
@@ -196,22 +200,30 @@ def num(x):
     return f"{x:.2f}".rstrip("0").rstrip(".")
 
 
+def box_lines(sides, x, top):
+    """The 1px lines of one box-drawing cell, as (x, y, width, height, opacity)."""
+    cx, cy = x + CW / 2, top + LINE_H / 2
+    lines = {"l": (x, cy - .5, CW / 2 + .5, 1), "r": (cx - .5, cy - .5, CW / 2 + .5, 1),
+             "u": (cx - .5, top, 1, LINE_H / 2 + .5), "d": (cx - .5, cy - .5, 1, LINE_H / 2 + .9)}
+    return [lines[s] + (1,) for s in sides]
+
+
 def shapes(cells, col0, top):
-    """Rectangles for the block and line characters in a row."""
+    """Rectangles for the block and box-drawing characters in a row."""
     out, i = [], 0
     while i < len(cells):
         ch, colour, _ = cells[i]
-        if ch not in BLOCKS and ch not in LINES:
+        if ch not in DRAWN:
             i += 1
             continue
         j = i + 1
         while j < len(cells) and cells[j][:2] == (ch, colour):
             j += 1
         x = PAD_X + (col0 + i) * CW
-        if ch == "─":
+        if ch == "─":                               # a run of these is one line
             boxes = [(x, top + LINE_H / 2 - .5, (j - i) * CW, 1, 1)]
-        elif ch == "│":
-            boxes = [(x + (k + .5) * CW - .5, top, 1, LINE_H, 1) for k in range(j - i)]
+        elif ch in BOX:
+            boxes = [line for k in range(j - i) for line in box_lines(BOX[ch], x + k * CW, top)]
         else:
             bx, by, bw, bh, alpha = BLOCKS[ch]
             # Full-width blocks merge into one shape; a hair of overlap hides seams.
@@ -232,12 +244,12 @@ def words(cells, col0):
     out, i = [], 0
     while i < len(cells):
         ch, colour, bold = cells[i]
-        if ch == " " or ch in BLOCKS or ch in LINES:
+        if ch == " " or ch in DRAWN:
             i += 1
             continue
         j = i + 1
         while (j < len(cells) and cells[j][1:] == (colour, bold)
-               and cells[j][0] != " " and cells[j][0] not in BLOCKS and cells[j][0] not in LINES):
+               and cells[j][0] != " " and cells[j][0] not in DRAWN):
             j += 1
         out.append((col0 + i, "".join(c[0] for c in cells[i:j]), colour, bold))
         i = j
@@ -373,7 +385,7 @@ def embedded_fonts(rows, warnings):
     used = {400: set(TITLE), 700: set()}
     for _, cells in rows + [("cmd", styled(PROMPT, "w"))]:
         for ch, _, bold in cells:
-            if ch != " " and ch not in BLOCKS and ch not in LINES:
+            if ch != " " and ch not in DRAWN:
                 used[700 if bold else 400].add(ch)
     css = ""
     for weight, chars in used.items():
